@@ -11,6 +11,7 @@ export const CharacterDetailsStack = () => {
       <Stack.Screen
         name={CharacterDetailsStackRoutes.CharacterDetailsScreen}
         children={CharacterDetailsScreen}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );

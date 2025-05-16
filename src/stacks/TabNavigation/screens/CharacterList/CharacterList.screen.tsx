@@ -1,23 +1,77 @@
-import {View, Text, Button} from 'react-native';
+import { Text, FlatList, ActivityIndicator, View } from 'react-native';
 import React from 'react';
-import {styles} from './CharacterList.styled';
-import {useNavigation} from '@react-navigation/native';
-import {MainStackNavigationProp} from '../../../Main/Main.routes';
+import { styles } from './CharacterList.styled';
+import AppLayout from "../../../../components/AppLayout";
+import CharacterCard from "./CharacterCard/CharacterCard";
+import { CharacterList } from '../../../../types/Character';
+import { fetchData } from "../../../../api/api";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 const CharacterListScreen = () => {
-  const {navigate} = useNavigation<MainStackNavigationProp>();
+  const {
+    data,
+    isPending,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = useInfiniteQuery({
+    queryKey: ['characters'],
+    queryFn: ({ pageParam = 1 }) => fetchData<CharacterList>(`character?page=${pageParam}`),
+    getNextPageParam: (lastPage) => {
+      if (!lastPage.info.next) {
+        return undefined;
+      }
+      const nextUrl = new URL(lastPage.info.next);
+      const nextPage = nextUrl.searchParams.get('page');
+      return nextPage ? parseInt(nextPage) : undefined;
+    },
+    initialPageParam: 1,
+  });
+
+  const allCharacters = data?.pages.flatMap(page => page.results) ?? [];
+
+  const handleLoadMore = async () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      await fetchNextPage();
+    }
+  };
+
+  if (isPending) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Something went wrong</Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Implement CharactersListScreen</Text>
-      <Button
-        title="Navigate to Details screen"
-        onPress={(): void => {
-          navigate('CharacterDetailsStack', {
-            screen: 'CharacterDetailsScreen',
-          });
-        }}
+    <AppLayout>
+      <Text style={styles.header}>Characters</Text>
+      <FlatList
+        data={allCharacters}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item}) => <CharacterCard character={item} />}
+        showsVerticalScrollIndicator={false}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={() => 
+          isFetchingNextPage ? (
+            <View style={styles.footerLoader}>
+              <ActivityIndicator />
+            </View>
+          ) : null
+        }
       />
-    </View>
+    </AppLayout>
   );
 };
 
