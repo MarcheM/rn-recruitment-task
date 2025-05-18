@@ -6,7 +6,7 @@ export interface CharacterDetail {
      type: string,
      gender: string,
      origin : {
-     name: string ,
+         name: string ,
          url:  string
      },
      location : {

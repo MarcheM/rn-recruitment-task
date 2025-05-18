@@ -10,7 +10,7 @@ export const CharacterDetailsStack = () => {
     <Stack.Navigator>
       <Stack.Screen
         name={CharacterDetailsStackRoutes.CharacterDetailsScreen}
-        children={CharacterDetailsScreen}
+        component={CharacterDetailsScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

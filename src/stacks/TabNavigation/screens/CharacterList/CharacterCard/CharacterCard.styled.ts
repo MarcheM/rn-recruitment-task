@@ -38,6 +38,7 @@ export const styles = StyleSheet.create({
         width: 200,
         height: 200,
         borderRadius: 16,
+        borderWidth: 1,
     },
     smallGap: {
         gap:4,

@@ -6,8 +6,10 @@ import CharacterCard from "./CharacterCard/CharacterCard";
 import { CharacterList } from '../../../../types/Character';
 import { fetchData } from "../../../../api/api";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import Filter from "../../../../components/Filter";
 
 const CharacterListScreen = () => {
+  const [searchedName, setSearchedName] = React.useState('');
   const {
     data,
     isPending,
@@ -56,6 +58,7 @@ const CharacterListScreen = () => {
   return (
     <AppLayout>
       <Text style={styles.header}>Characters</Text>
+      <Filter value={searchedName} setValue={setSearchedName}></Filter>
       <FlatList
         data={allCharacters}
         keyExtractor={item => item.id.toString()}
