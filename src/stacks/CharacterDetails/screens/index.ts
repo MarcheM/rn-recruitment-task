@@ -1,1 +1,1 @@
-export {CharacterDetailsScreen} from './CharacterDetails';
+export { CharacterDetailsScreen } from './CharacterDetails';

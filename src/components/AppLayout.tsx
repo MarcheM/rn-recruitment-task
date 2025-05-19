@@ -1,5 +1,10 @@
 import React from "react";
-import {SafeAreaView, Image, StyleSheet, View} from "react-native";
+import {
+    SafeAreaView,
+    Image,
+    StyleSheet,
+    View
+} from "react-native";
 
 interface Props {
     children: React.ReactNode

@@ -1,15 +1,20 @@
-import { Text, FlatList, ActivityIndicator, View } from 'react-native';
+import { Text, FlatList, ActivityIndicator, View, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { styles } from './CharacterList.styled';
 import AppLayout from "../../../../components/AppLayout";
 import CharacterCard from "./CharacterCard/CharacterCard";
-import { CharacterList } from '../../../../types/Character';
-import { fetchData } from "../../../../api/api";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import Filter from "../../../../components/Filter";
+import InputFilter from "../../../../components/InputFilter";
+import { useCharactersList } from '../../../../hooks/useCharactersList';
+import { useCharacterContext } from '../../../../context/CharacterContext';
+import { FiltersPanel } from '../../../../components/FiltersPanel';
 
 const CharacterListScreen = () => {
-  const [searchedName, setSearchedName] = React.useState('');
+  const { searchName, setSearchName } = useCharacterContext();
+
+  const handleChange = (value: string) => {
+    setSearchName(value);
+  };
+
   const {
     data,
     isPending,
@@ -17,19 +22,7 @@ const CharacterListScreen = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage
-  } = useInfiniteQuery({
-    queryKey: ['characters'],
-    queryFn: ({ pageParam = 1 }) => fetchData<CharacterList>(`character?page=${pageParam}`),
-    getNextPageParam: (lastPage) => {
-      if (!lastPage.info.next) {
-        return undefined;
-      }
-      const nextUrl = new URL(lastPage.info.next);
-      const nextPage = nextUrl.searchParams.get('page');
-      return nextPage ? parseInt(nextPage) : undefined;
-    },
-    initialPageParam: 1,
-  });
+  } = useCharactersList();
 
   const allCharacters = data?.pages.flatMap(page => page.results) ?? [];
 
@@ -39,7 +32,7 @@ const CharacterListScreen = () => {
     }
   };
 
-  if (isPending) {
+  if (isPending && allCharacters.length === 0) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" />
@@ -58,7 +51,8 @@ const CharacterListScreen = () => {
   return (
     <AppLayout>
       <Text style={styles.header}>Characters</Text>
-      <Filter value={searchedName} setValue={setSearchedName}></Filter>
+      <InputFilter value={searchName} setValue={handleChange} />
+      <FiltersPanel />
       <FlatList
         data={allCharacters}
         keyExtractor={item => item.id.toString()}
@@ -66,6 +60,9 @@ const CharacterListScreen = () => {
         showsVerticalScrollIndicator={false}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
         ListFooterComponent={() => 
           isFetchingNextPage ? (
             <View style={styles.footerLoader}>

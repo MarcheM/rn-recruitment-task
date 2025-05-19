@@ -6,7 +6,7 @@ interface Props {
     setValue: (value: string) => void,
 }
 
-const Filter:React.FC<Props> = ({value, setValue}) => {
+const InputFilter:React.FC<Props> = ({value, setValue}) => {
     return (
         <View style={styles.inputContainer}>
             <Image source={require('../../assets/icons/Magnify.png')} />
@@ -20,7 +20,7 @@ const Filter:React.FC<Props> = ({value, setValue}) => {
     );
 }
 
-export default Filter
+export default InputFilter
 
 const styles = StyleSheet.create({
     inputContainer: {

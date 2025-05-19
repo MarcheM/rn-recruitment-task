@@ -1,1 +1,1 @@
-export {default as CharacterDetailsScreen} from './CharacterDetails.screen';
+export { default as CharacterDetailsScreen } from './CharacterDetails.screen';

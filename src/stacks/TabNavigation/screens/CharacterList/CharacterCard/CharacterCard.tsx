@@ -16,11 +16,11 @@ interface Props {
 
 const CharacterCard: React.FC<Props> = ({character}) => {
     const {navigate} = useNavigation<MainStackNavigationProp>();
-    const { likedCharacterIds, toggleCharacterId } = useCharacterContext();
+    const { likedCharacterIds, toggleLikedCharacter } = useCharacterContext();
     const isLiked = likedCharacterIds.has(character.id.toString());
 
     const handleLikePress = () => {
-        toggleCharacterId(character.id.toString());
+        toggleLikedCharacter(character.id.toString());
     };
 
     return (
@@ -59,4 +59,4 @@ const CharacterCard: React.FC<Props> = ({character}) => {
     )
  }
 
-export default CharacterCard
+export default React.memo(CharacterCard)
